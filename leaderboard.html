@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundial 2026 — Leaderboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%);
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 3px solid #40916c;
+    }
+
+    header h1 { font-size: 1.6rem; font-weight: 700; }
+    header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+
+    nav a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+
+    nav a.active { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+    nav a:hover:not(.active) { background: #21262d; }
+
+    main { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    .podium {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .podium-slot {
+      flex: 1;
+      max-width: 180px;
+      text-align: center;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 16px 8px;
+    }
+
+    .podium-slot.first  { border-color: #f59e0b44; background: #1c1a0f; order: 2; }
+    .podium-slot.second { border-color: #9ca3af44; background: #131519; order: 1; }
+    .podium-slot.third  { border-color: #b45309aa; background: #1a1208; order: 3; }
+
+    .podium-medal { font-size: 1.8rem; margin-bottom: 8px; }
+    .podium-name  { font-weight: 700; font-size: 0.9rem; word-break: break-word; }
+    .podium-pts   { font-size: 1.4rem; font-weight: 700; margin-top: 4px; }
+    .podium-pts.first  { color: #f59e0b; }
+    .podium-pts.second { color: #9ca3af; }
+    .podium-pts.third  { color: #b45309; }
+
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th {
+      background: #21262d;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8b949e;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-top: 1px solid #21262d;
+      font-size: 0.9rem;
+    }
+
+    tr:first-child td { border-top: none; }
+
+    .rank-cell { width: 36px; color: #8b949e; font-weight: 700; }
+
+    .name-cell { font-weight: 600; }
+
+    .pts-cell {
+      font-weight: 700;
+      text-align: right;
+      color: #58a6ff;
+      font-size: 1rem;
+    }
+
+    .sub-pts {
+      font-size: 0.75rem;
+      color: #8b949e;
+      font-weight: 400;
+    }
+
+    .rank-1 td { background: #1c1a0f; }
+    .rank-2 td { background: #131519; }
+    .rank-3 td { background: #1a1208; }
+
+    .updated-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #8b949e;
+      margin-top: 16px;
+    }
+
+    .scoring-info {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .scoring-info .section-title { margin-bottom: 10px; }
+
+    .scoring-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 0.82rem;
+    }
+
+    .scoring-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .scoring-row .pts { color: #40916c; font-weight: 700; }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: #8b949e;
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 1.1rem; margin-bottom: 8px; color: #e6edf3; }
+
+    .loading { text-align: center; padding: 40px; color: #8b949e; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏆 Mundial 2026</h1>
+  <p>Leaderboard</p>
+</header>
+
+<nav>
+  <a href="index.html">Predictions</a>
+  <a href="leaderboard.html" class="active">Leaderboard</a>
+</nav>
+
+<main>
+  <div id="leaderboardContainer">
+    <div class="loading">Loading leaderboard…</div>
+  </div>
+
+  <div class="scoring-info">
+    <div class="section-title">📊 Scoring Rules</div>
+    <div class="scoring-grid">
+      <div>
+        <div class="scoring-row"><span>Exact score</span><span class="pts">3 pts</span></div>
+        <div class="scoring-row"><span>Correct winner</span><span class="pts">1 pt</span></div>
+        <div class="scoring-row" style="margin-top:8px;color:#8b949e;font-size:0.78rem"><span colspan="2">Multipliers:</span></div>
+        <div class="scoring-row"><span>Round of 32</span><span class="pts">×1.5</span></div>
+        <div class="scoring-row"><span>Round of 16</span><span class="pts">×2</span></div>
+        <div class="scoring-row"><span>Quarterfinals</span><span class="pts">×3</span></div>
+        <div class="scoring-row"><span>Semifinals</span><span class="pts">×5</span></div>
+        <div class="scoring-row"><span>Final</span><span class="pts">×10</span></div>
+      </div>
+      <div>
+        <div style="color:#8b949e;font-size:0.78rem;margin-bottom:6px">Bonus predictions:</div>
+        <div class="scoring-row"><span>Best Player</span><span class="pts">+15</span></div>
+        <div class="scoring-row"><span>Top Scorer</span><span class="pts">+10</span></div>
+        <div class="scoring-row"><span>Best Young Player</span><span class="pts">+8</span></div>
+        <div class="scoring-row"><span>Best Goalkeeper</span><span class="pts">+8</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // ⚠️ Replace this with your deployed Apps Script Web App URL
+  const WEB_APP_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+
+  async function loadLeaderboard() {
+    try {
+      const res  = await fetch(`${WEB_APP_URL}?action=leaderboard`);
+      const data = await res.json();
+      renderLeaderboard(data.players || [], data.lastUpdated);
+    } catch (err) {
+      document.getElementById('leaderboardContainer').innerHTML =
+        `<div class="empty-state"><div class="icon">⚠️</div><h3>Could not load leaderboard</h3><p>Check that the Web App URL is configured.</p></div>`;
+    }
+  }
+
+  function renderLeaderboard(players, lastUpdated) {
+    const container = document.getElementById('leaderboardContainer');
+
+    if (players.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🏁</div>
+          <h3>No scores yet</h3>
+          <p>Scores update nightly after matches finish.</p>
+        </div>`;
+      return;
+    }
+
+    // Podium (top 3)
+    let podiumHtml = '';
+    if (players.length >= 1) {
+      const medals = [
+        { cls: 'first',  medal: '🥇' },
+        { cls: 'second', medal: '🥈' },
+        { cls: 'third',  medal: '🥉' },
+      ];
+      const slots = players.slice(0, Math.min(3, players.length));
+      podiumHtml = `<div class="podium">`;
+      slots.forEach((p, i) => {
+        const m = medals[i];
+        podiumHtml += `
+          <div class="podium-slot ${m.cls}">
+            <div class="podium-medal">${m.medal}</div>
+            <div class="podium-name">${esc(p.name)}</div>
+            <div class="podium-pts ${m.cls}">${formatPts(p.total)}</div>
+          </div>`;
+      });
+      podiumHtml += `</div>`;
+    }
+
+    // Full table
+    let tableHtml = `
+      <div class="section-title">All players</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th style="text-align:right">Points</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    players.forEach((p, i) => {
+      const rankClass = i < 3 ? `rank-${i+1}` : '';
+      tableHtml += `
+        <tr class="${rankClass}">
+          <td class="rank-cell">${i + 1}</td>
+          <td class="name-cell">${esc(p.name)}</td>
+          <td class="pts-cell">
+            ${formatPts(p.total)}
+            <br><span class="sub-pts">${formatPts(p.matchPoints)} match${p.bonusPoints > 0 ? ` + ${formatPts(p.bonusPoints)} bonus` : ''}</span>
+          </td>
+        </tr>`;
+    });
+
+    tableHtml += `</tbody></table>`;
+
+    const updatedNote = lastUpdated
+      ? `<p class="updated-note">Last updated: ${new Date(lastUpdated).toLocaleString('en-GB')}</p>`
+      : '';
+
+    container.innerHTML = podiumHtml + tableHtml + updatedNote;
+  }
+
+  function formatPts(n) {
+    const v = Number(n);
+    return Number.isInteger(v) ? v : v.toFixed(1);
+  }
+
+  function esc(str) {
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  loadLeaderboard();
+</script>
+</body>
+</html>
