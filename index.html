@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mundial 2026 — Predictions</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -21,8 +26,16 @@
       border-bottom: 3px solid #40916c;
     }
 
-    header h1 { font-size: 1.6rem; font-weight: 700; }
-    header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
 
     nav {
       display: flex;
@@ -42,10 +55,21 @@
       border: 1px solid #30363d;
     }
 
-    nav a.active { background: #1f6feb; color: #fff; border-color: #1f6feb; }
-    nav a:hover:not(.active) { background: #21262d; }
+    nav a.active {
+      background: #1f6feb;
+      color: #fff;
+      border-color: #1f6feb;
+    }
 
-    main { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; }
+    nav a:hover:not(.active) {
+      background: #21262d;
+    }
+
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
 
     .name-section {
       background: #161b22;
@@ -55,7 +79,13 @@
       margin-bottom: 20px;
     }
 
-    .name-section label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #8b949e; }
+    .name-section label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
 
     .name-section input {
       width: 100%;
@@ -90,7 +120,9 @@
       transition: border-color 0.15s;
     }
 
-    .match-card:hover { border-color: #58a6ff44; }
+    .match-card:hover {
+      border-color: #58a6ff44;
+    }
 
     .match-card.locked {
       opacity: 0.5;
@@ -123,7 +155,9 @@
       font-size: 0.95rem;
     }
 
-    .team.away { text-align: right; }
+    .team.away {
+      text-align: right;
+    }
 
     .score-inputs {
       display: flex;
@@ -173,7 +207,9 @@
       margin-bottom: 20px;
     }
 
-    .bonus-section .section-title { color: #40916c; }
+    .bonus-section .section-title {
+      color: #40916c;
+    }
 
     .bonus-note {
       font-size: 0.8rem;
@@ -182,7 +218,9 @@
       line-height: 1.5;
     }
 
-    .bonus-field { margin-bottom: 12px; }
+    .bonus-field {
+      margin-bottom: 12px;
+    }
 
     .bonus-field label {
       display: flex;
@@ -207,7 +245,10 @@
       font-size: 0.95rem;
     }
 
-    .bonus-field input:focus { outline: none; border-color: #40916c; }
+    .bonus-field input:focus {
+      outline: none;
+      border-color: #40916c;
+    }
 
     .submit-btn {
       width: 100%;
@@ -222,8 +263,14 @@
       transition: opacity 0.15s;
     }
 
-    .submit-btn:hover { opacity: 0.9; }
-    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
     .toast {
       position: fixed;
@@ -238,10 +285,29 @@
       animation: fadein 0.3s ease;
     }
 
-    .toast.success { background: #166534; color: #bbf7d0; border: 1px solid #22c55e44; }
-    .toast.error   { background: #7f1d1d; color: #fecaca; border: 1px solid #ef444444; }
+    .toast.success {
+      background: #166534;
+      color: #bbf7d0;
+      border: 1px solid #22c55e44;
+    }
 
-    @keyframes fadein { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .toast.error {
+      background: #7f1d1d;
+      color: #fecaca;
+      border: 1px solid #ef444444;
+    }
+
+    @keyframes fadein {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
 
     .empty-state {
       text-align: center;
@@ -249,108 +315,126 @@
       color: #8b949e;
     }
 
-    .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 1.1rem; margin-bottom: 8px; color: #e6edf3; }
-    .empty-state p { font-size: 0.9rem; line-height: 1.5; }
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
 
-    .loading { text-align: center; padding: 40px; color: #8b949e; }
+    .empty-state h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #e6edf3;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #8b949e;
+    }
   </style>
 </head>
+
 <body>
 
-<header>
-  <h1>⚽ Mundial 2026</h1>
-  <p>Submit your daily predictions</p>
-</header>
+  <header>
+    <h1>⚽ Mundial 2026</h1>
+    <p>Submit your daily predictions</p>
+  </header>
 
-<nav>
-  <a href="index.html" class="active">Predictions</a>
-  <a href="leaderboard.html">Leaderboard</a>
-</nav>
+  <nav>
+    <a href="index.html" class="active">Predictions</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
 
-<main>
-  <div class="name-section">
-    <label for="playerName">Your name</label>
-    <input type="text" id="playerName" placeholder="Enter your name..." maxlength="30" autocomplete="off">
-  </div>
+  <main>
+    <div class="name-section">
+      <label for="playerName">Your name</label>
+      <input type="text" id="playerName" placeholder="Enter your name..." maxlength="30" autocomplete="off">
+    </div>
 
-  <div id="matchesContainer">
-    <div class="loading">Loading today's matches…</div>
-  </div>
+    <div id="matchesContainer">
+      <div class="loading">Loading today's matches…</div>
+    </div>
 
-  <div id="bonusSection" style="display:none">
-    <div class="bonus-section">
-      <div class="section-title">🏅 Tournament Bonus Predictions</div>
-      <p class="bonus-note">Submit once — these are locked after you save them the first time. +15/+10/+8/+8 points if correct.</p>
+    <div id="bonusSection" style="display:none">
+      <div class="bonus-section">
+        <div class="section-title">🏅 Tournament Bonus Predictions</div>
+        <p class="bonus-note">Submit once — these are locked after you save them the first time. +15/+10/+8/+8 points if
+          correct.</p>
 
-      <div class="bonus-field">
-        <label>Best Player of Tournament <span>+15 pts</span></label>
-        <input type="text" id="bonusBestPlayer" placeholder="e.g. Mbappe">
-      </div>
-      <div class="bonus-field">
-        <label>Top Scorer <span>+10 pts</span></label>
-        <input type="text" id="bonusTopScorer" placeholder="e.g. Mbappe">
-      </div>
-      <div class="bonus-field">
-        <label>Best Young Player <span>+8 pts</span></label>
-        <input type="text" id="bonusBestYoung" placeholder="e.g. Yamal">
-      </div>
-      <div class="bonus-field">
-        <label>Best Goalkeeper <span>+8 pts</span></label>
-        <input type="text" id="bonusBestGK" placeholder="e.g. Courtois">
+        <div class="bonus-field">
+          <label>Best Player of Tournament <span>+15 pts</span></label>
+          <input type="text" id="bonusBestPlayer" placeholder="e.g. Mbappe">
+        </div>
+        <div class="bonus-field">
+          <label>Top Scorer <span>+10 pts</span></label>
+          <input type="text" id="bonusTopScorer" placeholder="e.g. Mbappe">
+        </div>
+        <div class="bonus-field">
+          <label>Best Young Player <span>+8 pts</span></label>
+          <input type="text" id="bonusBestYoung" placeholder="e.g. Yamal">
+        </div>
+        <div class="bonus-field">
+          <label>Best Goalkeeper <span>+8 pts</span></label>
+          <input type="text" id="bonusBestGK" placeholder="e.g. Courtois">
+        </div>
       </div>
     </div>
-  </div>
 
-  <button class="submit-btn" id="submitBtn" onclick="submitPredictions()" style="display:none">
-    Save Predictions
-  </button>
-</main>
+    <button class="submit-btn" id="submitBtn" onclick="submitPredictions()" style="display:none">
+      Save Predictions
+    </button>
+  </main>
 
-<script>
-  // ⚠️ Replace this with your deployed Apps Script Web App URL
-  const WEB_APP_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+  <script>
+    // ⚠️ Replace this with your deployed Apps Script Web App URL
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbybzLthSdPKiCCdrIjhwDjuKgQb0FjWMFxLYe-10pwVl1MbfQUry6cywM-K2NpJIig/exec';
 
-  let todayMatches = [];
-  let bonusShown = false;
+    let todayMatches = [];
+    let bonusShown = false;
 
-  const savedName = localStorage.getItem('playerName');
-  if (savedName) document.getElementById('playerName').value = savedName;
+    const savedName = localStorage.getItem('playerName');
+    if (savedName) document.getElementById('playerName').value = savedName;
 
-  async function loadMatches() {
-    try {
-      const res = await fetch(`${WEB_APP_URL}?action=matches`);
-      const data = await res.json();
-      todayMatches = data.matches || [];
-      renderMatches(data.today);
-    } catch (err) {
-      document.getElementById('matchesContainer').innerHTML =
-        `<div class="empty-state"><div class="icon">⚠️</div><h3>Could not load matches</h3><p>Check that the Web App URL is configured correctly.</p></div>`;
+    async function loadMatches() {
+      try {
+        const res = await fetch(`${WEB_APP_URL}?action=matches`);
+        const data = await res.json();
+        todayMatches = data.matches || [];
+        renderMatches(data.today);
+      } catch (err) {
+        document.getElementById('matchesContainer').innerHTML =
+          `<div class="empty-state"><div class="icon">⚠️</div><h3>Could not load matches</h3><p>Check that the Web App URL is configured correctly.</p></div>`;
+      }
     }
-  }
 
-  function renderMatches(today) {
-    const container = document.getElementById('matchesContainer');
+    function renderMatches(today) {
+      const container = document.getElementById('matchesContainer');
 
-    if (todayMatches.length === 0) {
-      container.innerHTML = `
+      if (todayMatches.length === 0) {
+        container.innerHTML = `
         <div class="empty-state">
           <div class="icon">📅</div>
           <h3>No matches today</h3>
           <p>Come back when there are matches scheduled.<br>Check the <a href="leaderboard.html" style="color:#58a6ff">leaderboard</a> in the meantime!</p>
         </div>`;
-      return;
-    }
+        return;
+      }
 
-    const now = new Date();
+      const now = new Date();
 
-    let html = `<div class="section-title">Today's matches — ${formatDate(today)}</div>`;
+      let html = `<div class="section-title">Today's matches — ${formatDate(today)}</div>`;
 
-    for (const m of todayMatches) {
-      const kickoff = new Date(`${m.date}T${m.time}:00`);
-      const locked  = now >= kickoff || m.status === 'FINISHED' || m.status === 'IN_PLAY';
+      for (const m of todayMatches) {
+        const kickoff = new Date(`${m.date}T${m.time}:00`);
+        const locked = now >= kickoff || m.status === 'FINISHED' || m.status === 'IN_PLAY';
 
-      html += `
+        html += `
         <div class="match-card ${locked ? 'locked' : ''}" id="card-${m.matchId}">
           <div class="match-meta">
             <span class="stage">${formatStage(m.stage)}</span>
@@ -368,118 +452,119 @@
           </div>
           ${locked ? '<div class="lock-badge">Predictions closed</div>' : ''}
         </div>`;
-    }
+      }
 
-    container.innerHTML = html;
+      container.innerHTML = html;
 
-    const hasOpen = todayMatches.some(m => {
-      const ko = new Date(`${m.date}T${m.time}:00`);
-      return now < ko && m.status !== 'FINISHED';
-    });
-
-    // Show bonus section once
-    if (!bonusShown) {
-      document.getElementById('bonusSection').style.display = 'block';
-      bonusShown = true;
-    }
-
-    if (hasOpen) {
-      document.getElementById('submitBtn').style.display = 'block';
-    }
-  }
-
-  async function submitPredictions() {
-    const playerName = document.getElementById('playerName').value.trim();
-    if (!playerName) { showToast('Enter your name first!', 'error'); return; }
-
-    localStorage.setItem('playerName', playerName);
-
-    const now = new Date();
-    const predictions = [];
-
-    for (const m of todayMatches) {
-      const kickoff = new Date(`${m.date}T${m.time}:00`);
-      if (now >= kickoff) continue;
-
-      const home = document.getElementById(`home-${m.matchId}`)?.value;
-      const away = document.getElementById(`away-${m.matchId}`)?.value;
-      if (home === '' || away === '') continue;
-
-      predictions.push({ matchId: m.matchId, homeScore: home, awayScore: away });
-    }
-
-    const bonus = {
-      BestPlayer:      document.getElementById('bonusBestPlayer').value.trim(),
-      TopScorer:       document.getElementById('bonusTopScorer').value.trim(),
-      BestYoungPlayer: document.getElementById('bonusBestYoung').value.trim(),
-      BestGK:          document.getElementById('bonusBestGK').value.trim(),
-    };
-
-    const hasPredictions = predictions.length > 0;
-    const hasBonus = Object.values(bonus).some(v => v !== '');
-
-    if (!hasPredictions && !hasBonus) {
-      showToast('No predictions to save.', 'error');
-      return;
-    }
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-
-    try {
-      const payload = { playerName, predictions };
-      if (hasBonus) payload.bonus = bonus;
-
-      const res = await fetch(WEB_APP_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload),
+      const hasOpen = todayMatches.some(m => {
+        const ko = new Date(`${m.date}T${m.time}:00`);
+        return now < ko && m.status !== 'FINISHED';
       });
-      const data = await res.json();
 
-      if (data.success) {
-        showToast(`✅ Saved ${data.saved} prediction${data.saved !== 1 ? 's' : ''}!`, 'success');
-        btn.textContent = '✅ Saved!';
-      } else {
-        showToast(`Error: ${data.error}`, 'error');
+      // Show bonus section once
+      if (!bonusShown) {
+        document.getElementById('bonusSection').style.display = 'block';
+        bonusShown = true;
+      }
+
+      if (hasOpen) {
+        document.getElementById('submitBtn').style.display = 'block';
+      }
+    }
+
+    async function submitPredictions() {
+      const playerName = document.getElementById('playerName').value.trim();
+      if (!playerName) { showToast('Enter your name first!', 'error'); return; }
+
+      localStorage.setItem('playerName', playerName);
+
+      const now = new Date();
+      const predictions = [];
+
+      for (const m of todayMatches) {
+        const kickoff = new Date(`${m.date}T${m.time}:00`);
+        if (now >= kickoff) continue;
+
+        const home = document.getElementById(`home-${m.matchId}`)?.value;
+        const away = document.getElementById(`away-${m.matchId}`)?.value;
+        if (home === '' || away === '') continue;
+
+        predictions.push({ matchId: m.matchId, homeScore: home, awayScore: away });
+      }
+
+      const bonus = {
+        BestPlayer: document.getElementById('bonusBestPlayer').value.trim(),
+        TopScorer: document.getElementById('bonusTopScorer').value.trim(),
+        BestYoungPlayer: document.getElementById('bonusBestYoung').value.trim(),
+        BestGK: document.getElementById('bonusBestGK').value.trim(),
+      };
+
+      const hasPredictions = predictions.length > 0;
+      const hasBonus = Object.values(bonus).some(v => v !== '');
+
+      if (!hasPredictions && !hasBonus) {
+        showToast('No predictions to save.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        const payload = { playerName, predictions };
+        if (hasBonus) payload.bonus = bonus;
+
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`✅ Saved ${data.saved} prediction${data.saved !== 1 ? 's' : ''}!`, 'success');
+          btn.textContent = '✅ Saved!';
+        } else {
+          showToast(`Error: ${data.error}`, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Save Predictions';
+        }
+      } catch (err) {
+        showToast('Network error. Try again.', 'error');
         btn.disabled = false;
         btn.textContent = 'Save Predictions';
       }
-    } catch (err) {
-      showToast('Network error. Try again.', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Save Predictions';
     }
-  }
 
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr + 'T12:00:00');
-    return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  }
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T12:00:00');
+      return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
 
-  function formatStage(stage) {
-    const map = {
-      GROUP_STAGE:    'Group Stage',
-      ROUND_OF_32:   'Round of 32',
-      LAST_16:       'Round of 16',
-      QUARTER_FINALS:'Quarter-finals',
-      SEMI_FINALS:   'Semi-finals',
-      FINAL:         'Final',
-    };
-    return map[stage] || stage;
-  }
+    function formatStage(stage) {
+      const map = {
+        GROUP_STAGE: 'Group Stage',
+        ROUND_OF_32: 'Round of 32',
+        LAST_16: 'Round of 16',
+        QUARTER_FINALS: 'Quarter-finals',
+        SEMI_FINALS: 'Semi-finals',
+        FINAL: 'Final',
+      };
+      return map[stage] || stage;
+    }
 
-  function showToast(msg, type) {
-    document.querySelectorAll('.toast').forEach(t => t.remove());
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 4000);
-  }
+    function showToast(msg, type) {
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 4000);
+    }
 
-  loadMatches();
-</script>
+    loadMatches();
+  </script>
 </body>
+
 </html>
