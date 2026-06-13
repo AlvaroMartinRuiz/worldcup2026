@@ -401,6 +401,13 @@
     const savedName = localStorage.getItem('playerName');
     if (savedName) document.getElementById('playerName').value = savedName;
 
+    document.getElementById('playerName').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const first = document.querySelector('.score-inputs input:not([disabled])');
+        if (first) first.focus();
+      }
+    });
+
     async function loadMatches() {
       try {
         const res = await fetch(`${WEB_APP_URL}?action=matches`);
