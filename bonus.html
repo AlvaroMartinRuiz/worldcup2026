@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundial 2026 — Bonus Predictions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%);
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 3px solid #40916c;
+    }
+
+    header h1 { font-size: 1.6rem; font-weight: 700; }
+    header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+
+    nav a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+
+    nav a.active { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+    nav a:hover:not(.active) { background: #21262d; }
+
+    main { max-width: 600px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    .name-section {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .name-section label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+
+    .name-section input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      font-size: 1rem;
+    }
+
+    .name-section input:focus { outline: none; border-color: #58a6ff; }
+
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #40916c;
+      margin-bottom: 12px;
+    }
+
+    .bonus-card {
+      background: #161b22;
+      border: 1px solid #40916c44;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .bonus-note {
+      font-size: 0.82rem;
+      color: #8b949e;
+      margin-bottom: 18px;
+      line-height: 1.6;
+      padding: 10px 12px;
+      background: #0d1117;
+      border-radius: 8px;
+      border-left: 3px solid #40916c;
+    }
+
+    .bonus-field { margin-bottom: 14px; }
+
+    .bonus-field label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .bonus-field label span { font-weight: 400; color: #40916c; }
+
+    .bonus-field input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      font-size: 0.95rem;
+    }
+
+    .bonus-field input:focus { outline: none; border-color: #40916c; }
+    .bonus-field input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .submitted-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0d2818;
+      border: 1px solid #40916c;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      color: #86efac;
+    }
+
+    .submitted-banner .icon { font-size: 1.2rem; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #1a472a, #40916c);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 999;
+      animation: fadein 0.3s ease;
+    }
+
+    .toast.success { background: #166534; color: #bbf7d0; border: 1px solid #22c55e44; }
+    .toast.error   { background: #7f1d1d; color: #fecaca; border: 1px solid #ef444444; }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏅 Mundial 2026</h1>
+  <p>Tournament Bonus Predictions</p>
+</header>
+
+<nav>
+  <a href="index.html">Predictions</a>
+  <a href="bonus.html" class="active">Bonus</a>
+  <a href="leaderboard.html">Leaderboard</a>
+  <a href="analytics.html">Analytics</a>
+</nav>
+
+<main>
+  <div class="name-section">
+    <label for="playerName">Your name</label>
+    <input type="text" id="playerName" placeholder="Enter your name..." maxlength="30" autocomplete="off">
+  </div>
+
+  <div class="bonus-card">
+    <div class="section-title">🏅 Tournament Bonus Predictions</div>
+
+    <div class="bonus-note">
+      These are submitted <strong>once</strong> and locked after your first save — no changes allowed.
+      Points are awarded at the end of the tournament.<br>
+      Best Player +15 &nbsp;·&nbsp; Top Scorer +10 &nbsp;·&nbsp; Best Young Player +8 &nbsp;·&nbsp; Best GK +8
+    </div>
+
+    <div id="submittedBanner" style="display:none" class="submitted-banner">
+      <span class="icon">✅</span>
+      <span>You've already submitted your bonus predictions. They're locked in!</span>
+    </div>
+
+    <div class="bonus-field">
+      <label>Best Player of Tournament <span>+15 pts</span></label>
+      <input type="text" id="bonusBestPlayer" placeholder="e.g. Mbappé">
+    </div>
+    <div class="bonus-field">
+      <label>Top Scorer <span>+10 pts</span></label>
+      <input type="text" id="bonusTopScorer" placeholder="e.g. Mbappé">
+    </div>
+    <div class="bonus-field">
+      <label>Best Young Player <span>+8 pts</span></label>
+      <input type="text" id="bonusBestYoung" placeholder="e.g. Yamal">
+    </div>
+    <div class="bonus-field">
+      <label>Best Goalkeeper <span>+8 pts</span></label>
+      <input type="text" id="bonusBestGK" placeholder="e.g. Courtois">
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitBonus()">
+      Lock In My Picks
+    </button>
+  </div>
+</main>
+
+<script>
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyf9G9ot_Z4Y4OlcYSZVIY_ESrnp_MRsPMFfIDjzSMiBtKRApMLrnc9kqO81IEPMFqaPg/exec';
+
+  const savedName = localStorage.getItem('playerName');
+  if (savedName) {
+    document.getElementById('playerName').value = savedName;
+    checkSubmitted(savedName);
+  }
+
+  document.getElementById('playerName').addEventListener('change', () => {
+    const name = document.getElementById('playerName').value.trim();
+    if (name) checkSubmitted(name);
+  });
+
+  function checkSubmitted(name) {
+    const key = `bonusPicks_${name.toLowerCase()}`;
+    const saved = localStorage.getItem(key);
+    if (!saved) return;
+    try {
+      const picks = JSON.parse(saved);
+      document.getElementById('bonusBestPlayer').value = picks.BestPlayer || '';
+      document.getElementById('bonusTopScorer').value  = picks.TopScorer  || '';
+      document.getElementById('bonusBestYoung').value  = picks.BestYoungPlayer || '';
+      document.getElementById('bonusBestGK').value     = picks.BestGK     || '';
+      lockForm();
+    } catch(e) {}
+  }
+
+  function lockForm() {
+    document.getElementById('submittedBanner').style.display = 'flex';
+    document.getElementById('submitBtn').style.display = 'none';
+    ['bonusBestPlayer','bonusTopScorer','bonusBestYoung','bonusBestGK']
+      .forEach(id => document.getElementById(id).disabled = true);
+  }
+
+  async function submitBonus() {
+    const playerName = document.getElementById('playerName').value.trim();
+    if (!playerName) { showToast('Enter your name first!', 'error'); return; }
+
+    const bonus = {
+      BestPlayer:      document.getElementById('bonusBestPlayer').value.trim(),
+      TopScorer:       document.getElementById('bonusTopScorer').value.trim(),
+      BestYoungPlayer: document.getElementById('bonusBestYoung').value.trim(),
+      BestGK:          document.getElementById('bonusBestGK').value.trim(),
+    };
+
+    if (!Object.values(bonus).some(v => v !== '')) {
+      showToast('Fill in at least one prediction.', 'error');
+      return;
+    }
+
+    localStorage.setItem('playerName', playerName);
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ playerName, predictions: [], bonus }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        const key = `bonusPicks_${playerName.toLowerCase()}`;
+        localStorage.setItem(key, JSON.stringify(bonus));
+        showToast('🏅 Bonus picks locked in!', 'success');
+        setTimeout(() => lockForm(), 800);
+      } else {
+        showToast(`Error: ${data.error}`, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Lock In My Picks';
+      }
+    } catch(err) {
+      showToast('Network error. Try again.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Lock In My Picks';
+    }
+  }
+
+  function showToast(msg, type) {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 4000);
+  }
+</script>
+</body>
+</html>

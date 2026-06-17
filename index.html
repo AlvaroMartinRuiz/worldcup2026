@@ -199,57 +199,6 @@
       margin-top: 8px;
     }
 
-    .bonus-section {
-      background: #161b22;
-      border: 1px solid #40916c44;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .bonus-section .section-title {
-      color: #40916c;
-    }
-
-    .bonus-note {
-      font-size: 0.8rem;
-      color: #8b949e;
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
-
-    .bonus-field {
-      margin-bottom: 12px;
-    }
-
-    .bonus-field label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .bonus-field label span {
-      font-weight: 400;
-      color: #40916c;
-    }
-
-    .bonus-field input {
-      width: 100%;
-      padding: 9px 12px;
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      color: #e6edf3;
-      font-size: 0.95rem;
-    }
-
-    .bonus-field input:focus {
-      outline: none;
-      border-color: #40916c;
-    }
-
     .submit-btn {
       width: 100%;
       padding: 14px;
@@ -414,6 +363,7 @@
 
   <nav>
     <a href="index.html" class="active">Predictions</a>
+    <a href="bonus.html">Bonus</a>
     <a href="leaderboard.html">Leaderboard</a>
     <a href="analytics.html">Analytics</a>
   </nav>
@@ -426,31 +376,6 @@
 
     <div id="matchesContainer">
       <div class="loading">Loading today's matches…</div>
-    </div>
-
-    <div id="bonusSection" style="display:none">
-      <div class="bonus-section">
-        <div class="section-title">🏅 Tournament Bonus Predictions</div>
-        <p class="bonus-note">Submit once — these are locked after you save them the first time. +15/+10/+8/+8 points if
-          correct.</p>
-
-        <div class="bonus-field">
-          <label>Best Player of Tournament <span>+15 pts</span></label>
-          <input type="text" id="bonusBestPlayer" placeholder="e.g. Mbappe">
-        </div>
-        <div class="bonus-field">
-          <label>Top Scorer <span>+10 pts</span></label>
-          <input type="text" id="bonusTopScorer" placeholder="e.g. Mbappe">
-        </div>
-        <div class="bonus-field">
-          <label>Best Young Player <span>+8 pts</span></label>
-          <input type="text" id="bonusBestYoung" placeholder="e.g. Yamal">
-        </div>
-        <div class="bonus-field">
-          <label>Best Goalkeeper <span>+8 pts</span></label>
-          <input type="text" id="bonusBestGK" placeholder="e.g. Courtois">
-        </div>
-      </div>
     </div>
 
     <button class="submit-btn" id="submitBtn" onclick="submitPredictions()" style="display:none">
@@ -472,7 +397,6 @@
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyf9G9ot_Z4Y4OlcYSZVIY_ESrnp_MRsPMFfIDjzSMiBtKRApMLrnc9kqO81IEPMFqaPg/exec';
 
     let todayMatches = [];
-    let bonusShown = false;
 
     const savedName = localStorage.getItem('playerName');
     if (savedName) document.getElementById('playerName').value = savedName;
@@ -544,12 +468,6 @@
         return now < ko && m.status !== 'FINISHED';
       });
 
-      // Show bonus section once
-      if (!bonusShown) {
-        document.getElementById('bonusSection').style.display = 'block';
-        bonusShown = true;
-      }
-
       if (hasOpen) {
         document.getElementById('submitBtn').style.display = 'block';
       }
@@ -575,17 +493,7 @@
         predictions.push({ matchId: m.matchId, homeScore: home, awayScore: away });
       }
 
-      const bonus = {
-        BestPlayer: document.getElementById('bonusBestPlayer').value.trim(),
-        TopScorer: document.getElementById('bonusTopScorer').value.trim(),
-        BestYoungPlayer: document.getElementById('bonusBestYoung').value.trim(),
-        BestGK: document.getElementById('bonusBestGK').value.trim(),
-      };
-
-      const hasPredictions = predictions.length > 0;
-      const hasBonus = Object.values(bonus).some(v => v !== '');
-
-      if (!hasPredictions && !hasBonus) {
+      if (predictions.length === 0) {
         showToast('No predictions to save.', 'error');
         return;
       }
@@ -595,12 +503,9 @@
       btn.textContent = 'Saving…';
 
       try {
-        const payload = { playerName, predictions };
-        if (hasBonus) payload.bonus = bonus;
-
         const res = await fetch(WEB_APP_URL, {
           method: 'POST',
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ playerName, predictions }),
         });
         const data = await res.json();
 
