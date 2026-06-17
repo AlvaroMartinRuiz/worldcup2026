@@ -282,6 +282,7 @@
   <nav>
     <a href="index.html">Predictions</a>
     <a href="leaderboard.html" class="active">Leaderboard</a>
+    <a href="analytics.html">Analytics</a>
   </nav>
 
   <main>
@@ -385,7 +386,7 @@
           <td class="name-cell">${esc(p.name)}</td>
           <td class="pts-cell">
             ${formatPts(p.total)}
-            <br><span class="sub-pts">${formatPts(p.matchPoints)} match${p.bonusPoints > 0 ? ` + ${formatPts(p.bonusPoints)} bonus` : ''}</span>
+            <br><span class="sub-pts">${buildBreakdown(p)}</span>
           </td>
         </tr>`;
       });
@@ -402,6 +403,14 @@
     function formatPts(n) {
       const v = Number(n);
       return Number.isInteger(v) ? v : v.toFixed(1);
+    }
+
+    function buildBreakdown(p) {
+      const parts = [];
+      if (p.winnerPoints > 0) parts.push(`${formatPts(p.winnerPoints)} result`);
+      if (p.exactPoints  > 0) parts.push(`${formatPts(p.exactPoints)} exact`);
+      const matchDetail = parts.length ? `${formatPts(p.matchPoints)} match (${parts.join(' + ')})` : `${formatPts(p.matchPoints)} match`;
+      return p.bonusPoints > 0 ? `${matchDetail} + ${formatPts(p.bonusPoints)} bonus` : matchDetail;
     }
 
     function esc(str) {

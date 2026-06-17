@@ -336,6 +336,51 @@
       padding: 40px;
       color: #8b949e;
     }
+
+    .pred-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+
+    .pred-card .match-label {
+      font-size: 0.8rem;
+      color: #8b949e;
+      margin-bottom: 6px;
+    }
+
+    .pred-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .pred-row .pred-team { flex: 1; font-weight: 600; }
+    .pred-row .pred-team.away { text-align: right; }
+
+    .pred-score {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #58a6ff;
+      min-width: 56px;
+      text-align: center;
+    }
+
+    .pred-result {
+      font-size: 0.72rem;
+      margin-top: 6px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .pred-result.exact  { background: #166534; color: #bbf7d0; }
+    .pred-result.winner { background: #1e3a5f; color: #93c5fd; }
+    .pred-result.wrong  { background: #4a1919; color: #fca5a5; }
+    .pred-result.pending{ background: #21262d; color: #8b949e; }
   </style>
 </head>
 
@@ -349,6 +394,7 @@
   <nav>
     <a href="index.html" class="active">Predictions</a>
     <a href="leaderboard.html">Leaderboard</a>
+    <a href="analytics.html">Analytics</a>
   </nav>
 
   <main>
@@ -389,6 +435,14 @@
     <button class="submit-btn" id="submitBtn" onclick="submitPredictions()" style="display:none">
       Save Predictions
     </button>
+
+    <div id="predictionsViewer" style="display:none; margin-top:28px">
+      <div class="section-title">👁 See today's predictions</div>
+      <select id="playerSelect" onchange="showPlayerPredictions()" style="width:100%;padding:10px 12px;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:0.95rem;margin-bottom:14px">
+        <option value="">Select a player…</option>
+      </select>
+      <div id="playerPredictionsContainer"></div>
+    </div>
   </main>
 
   <script>
@@ -570,7 +624,68 @@
       setTimeout(() => t.remove(), 4000);
     }
 
+    // ---- Predictions viewer ----
+    let allPredictionsData = null;
+
+    async function loadPredictionsViewer() {
+      try {
+        const res  = await fetch(`${WEB_APP_URL}?action=todaypredictions`);
+        const data = await res.json();
+        allPredictionsData = data;
+        if (!data.players || data.players.length === 0) return;
+
+        const viewer = document.getElementById('predictionsViewer');
+        const sel    = document.getElementById('playerSelect');
+        viewer.style.display = 'block';
+        data.players.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = `${name} (${(data.predictions[name] || []).length}/${data.totalMatches} matches)`;
+          sel.appendChild(opt);
+        });
+      } catch(e) { /* silently skip */ }
+    }
+
+    function showPlayerPredictions() {
+      const player = document.getElementById('playerSelect').value;
+      const container = document.getElementById('playerPredictionsContainer');
+      if (!player || !allPredictionsData) { container.innerHTML = ''; return; }
+
+      const preds = allPredictionsData.predictions[player] || [];
+      if (preds.length === 0) { container.innerHTML = '<p style="color:#8b949e;font-size:0.85rem">No predictions submitted yet.</p>'; return; }
+
+      container.innerHTML = preds.map(p => {
+        const finished = p.status === 'FINISHED';
+        let resultHtml = '';
+        if (finished && p.actualHome !== null) {
+          const predW = p.predHome > p.predAway ? 'H' : p.predHome < p.predAway ? 'A' : 'D';
+          const realW = p.actualHome > p.actualAway ? 'H' : p.actualHome < p.actualAway ? 'A' : 'D';
+          const exact = Number(p.predHome) === p.actualHome && Number(p.predAway) === p.actualAway;
+          if (exact)          resultHtml = `<span class="pred-result exact">⚽ Exact! +4pts</span>`;
+          else if (predW === realW) resultHtml = `<span class="pred-result winner">✓ Correct result +1pt</span>`;
+          else                resultHtml = `<span class="pred-result wrong">✗ Wrong (${p.actualHome}–${p.actualAway})</span>`;
+        } else if (!finished) {
+          resultHtml = `<span class="pred-result pending">Pending – ${p.time}</span>`;
+        }
+        return `
+          <div class="pred-card">
+            <div class="match-label">${esc(p.homeTeam)} vs ${esc(p.awayTeam)}</div>
+            <div class="pred-row">
+              <div class="pred-team">${esc(p.homeTeam)}</div>
+              <div class="pred-score">${p.predHome} – ${p.predAway}</div>
+              <div class="pred-team away">${esc(p.awayTeam)}</div>
+            </div>
+            ${resultHtml}
+          </div>`;
+      }).join('');
+    }
+
+    function esc(str) {
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
     loadMatches();
+    loadPredictionsViewer();
   </script>
 </body>
 

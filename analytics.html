@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundial 2026 — Analytics</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%);
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 3px solid #40916c;
+    }
+
+    header h1 { font-size: 1.6rem; font-weight: 700; }
+    header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+
+    nav a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+
+    nav a.active { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+    nav a:hover:not(.active) { background: #21262d; }
+
+    main { max-width: 760px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 320px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: #21262d;
+      padding: 9px 12px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8b949e;
+    }
+
+    td { padding: 10px 12px; border-top: 1px solid #21262d; }
+    tr:first-child td { border-top: none; }
+
+    .name-col { font-weight: 600; }
+    .num-col   { text-align: right; font-weight: 600; }
+    .pct       { color: #8b949e; font-size: 0.78rem; margin-left: 4px; font-weight: 400; }
+
+    .rank-1 td { background: #1c1a0f; }
+    .rank-2 td { background: #131519; }
+    .rank-3 td { background: #1a1208; }
+
+    .loading { text-align: center; padding: 40px; color: #8b949e; }
+    .empty   { text-align: center; padding: 32px; color: #8b949e; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Mundial 2026</h1>
+  <p>Analytics</p>
+</header>
+
+<nav>
+  <a href="index.html">Predictions</a>
+  <a href="leaderboard.html">Leaderboard</a>
+  <a href="analytics.html" class="active">Analytics</a>
+</nav>
+
+<main>
+  <div id="mainContent">
+    <div class="loading">Loading analytics…</div>
+  </div>
+</main>
+
+<script>
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbybzLthSdPKiCCdrIjhwDjuKgQb0FjWMFxLYe-10pwVl1MbfQUry6cywM-K2NpJIig/exec';
+
+  const COLORS = [
+    '#58a6ff','#f59e0b','#40916c','#f87171',
+    '#a78bfa','#34d399','#fb923c','#e879f9',
+    '#22d3ee','#fbbf24','#86efac','#fda4af',
+  ];
+
+  async function load() {
+    try {
+      const res  = await fetch(`${WEB_APP_URL}?action=analytics`);
+      const data = await res.json();
+      render(data);
+    } catch(e) {
+      document.getElementById('mainContent').innerHTML =
+        `<div class="empty">⚠️ Could not load analytics. Check the Web App URL.</div>`;
+    }
+  }
+
+  function render({ gameDates, series }) {
+    if (!series || series.length === 0) {
+      document.getElementById('mainContent').innerHTML =
+        `<div class="empty">No data yet — scores will appear here after the first matches finish.</div>`;
+      return;
+    }
+
+    const labels = gameDates.map(d => {
+      const dt = new Date(d + 'T12:00:00');
+      return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    });
+
+    // Sort series by final points desc for the table
+    const sorted = [...series].sort((a, b) => (b.points.at(-1) || 0) - (a.points.at(-1) || 0));
+
+    document.getElementById('mainContent').innerHTML = `
+      <div class="card">
+        <div class="section-title">📈 Points progression</div>
+        <div class="chart-wrap"><canvas id="progressChart"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">🎯 Prediction accuracy</div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th style="text-align:right">Points</th>
+              <th style="text-align:right">Predicted</th>
+              <th style="text-align:right">Correct result</th>
+              <th style="text-align:right">Exact score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sorted.map((s, i) => {
+              const pts     = s.points.at(-1) || 0;
+              const total   = s.stats.total   || 0;
+              const correct = s.stats.correct || 0;
+              const exact   = s.stats.exact   || 0;
+              const pctC = total ? Math.round(correct / total * 100) : 0;
+              const pctE = total ? Math.round(exact   / total * 100) : 0;
+              const color = COLORS[series.indexOf(s) % COLORS.length];
+              return `<tr class="${i < 3 ? 'rank-'+(i+1) : ''}">
+                <td style="color:${color};font-weight:700">${i+1}</td>
+                <td class="name-col">${esc(s.name)}</td>
+                <td class="num-col">${fmt(pts)}</td>
+                <td class="num-col">${total}</td>
+                <td class="num-col">${correct}<span class="pct">${pctC}%</span></td>
+                <td class="num-col">${exact}<span class="pct">${pctE}%</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">📅 Points per game day</div>
+        <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+      </div>
+    `;
+
+    // Line chart — cumulative progression
+    new Chart(document.getElementById('progressChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: series.map((s, i) => ({
+          label:           s.name,
+          data:            s.points,
+          borderColor:     COLORS[i % COLORS.length],
+          backgroundColor: COLORS[i % COLORS.length] + '22',
+          borderWidth:     2.5,
+          pointRadius:     4,
+          pointHoverRadius:6,
+          tension:         0.3,
+          fill:            false,
+        })),
+      },
+      options: chartOptions('Points'),
+    });
+
+    // Bar chart — points per game day per player
+    const dailyPts = series.map((s, i) => ({
+      label:           s.name,
+      data:            s.points.map((v, j) => j === 0 ? v : v - s.points[j-1]),
+      backgroundColor: COLORS[i % COLORS.length] + 'bb',
+      borderColor:     COLORS[i % COLORS.length],
+      borderWidth:     1,
+    }));
+
+    new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: { labels, datasets: dailyPts },
+      options: { ...chartOptions('Points that day'), plugins: { ...chartOptions('').plugins, tooltip: { mode: 'index' } } },
+    });
+  }
+
+  function chartOptions(yLabel) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#8b949e', font: { size: 12 }, boxWidth: 14 } },
+        tooltip: {
+          backgroundColor: '#1c2128',
+          borderColor: '#30363d',
+          borderWidth: 1,
+          titleColor: '#e6edf3',
+          bodyColor: '#8b949e',
+        },
+      },
+      scales: {
+        x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' }, title: { display: !!yLabel, text: yLabel, color: '#8b949e' } },
+      },
+    };
+  }
+
+  function fmt(n) { const v = Number(n); return Number.isInteger(v) ? v : v.toFixed(1); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  load();
+</script>
+</body>
+</html>
