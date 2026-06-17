@@ -317,7 +317,7 @@
 
   <script>
     // ⚠️ Replace this with your deployed Apps Script Web App URL
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbybzLthSdPKiCCdrIjhwDjuKgQb0FjWMFxLYe-10pwVl1MbfQUry6cywM-K2NpJIig/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyf9G9ot_Z4Y4OlcYSZVIY_ESrnp_MRsPMFfIDjzSMiBtKRApMLrnc9kqO81IEPMFqaPg/exec';
 
     async function loadLeaderboard() {
       try {
@@ -408,7 +408,7 @@
     function buildBreakdown(p) {
       const parts = [];
       if (p.winnerPoints > 0) parts.push(`${formatPts(p.winnerPoints)} result`);
-      if (p.exactPoints  > 0) parts.push(`${formatPts(p.exactPoints)} exact`);
+      if (p.exactPoints > 0) parts.push(`${formatPts(p.exactPoints)} exact`);
       const matchDetail = parts.length ? `${formatPts(p.matchPoints)} match (${parts.join(' + ')})` : `${formatPts(p.matchPoints)} match`;
       return p.bonusPoints > 0 ? `${matchDetail} + ${formatPts(p.bonusPoints)} bonus` : matchDetail;
     }
