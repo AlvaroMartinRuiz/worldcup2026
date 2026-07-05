@@ -153,10 +153,21 @@
       flex: 1;
       font-weight: 600;
       font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .team.away {
       text-align: right;
+      justify-content: flex-end;
+    }
+
+    .team-crest {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      flex-shrink: 0;
     }
 
     .score-inputs {
@@ -310,10 +321,14 @@
     .pred-row .pred-team {
       flex: 1;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .pred-row .pred-team.away {
       text-align: right;
+      justify-content: flex-end;
     }
 
     .pred-score {
@@ -449,13 +464,13 @@
             ${locked ? '<span style="color:#f87171">⛔ Locked</span>' : ''}
           </div>
           <div class="match-row">
-            <div class="team">${m.homeTeam}</div>
+            <div class="team">${crestImg(m.homeCrest)}<span>${esc(m.homeTeam)}</span></div>
             <div class="score-inputs">
               <input type="number" min="0" max="20" id="home-${m.matchId}" placeholder="—" ${locked ? 'disabled' : ''}>
               <span class="sep">–</span>
               <input type="number" min="0" max="20" id="away-${m.matchId}" placeholder="—" ${locked ? 'disabled' : ''}>
             </div>
-            <div class="team away">${m.awayTeam}</div>
+            <div class="team away"><span>${esc(m.awayTeam)}</span>${crestImg(m.awayCrest)}</div>
           </div>
           ${locked ? '<div class="lock-badge">Predictions closed</div>' : ''}
         </div>`;
@@ -598,9 +613,9 @@
           <div class="pred-card">
             <div class="match-label">${esc(p.homeTeam)} vs ${esc(p.awayTeam)}</div>
             <div class="pred-row">
-              <div class="pred-team">${esc(p.homeTeam)}</div>
+              <div class="pred-team">${crestImg(p.homeCrest)}<span>${esc(p.homeTeam)}</span></div>
               <div class="pred-score">${p.predHome} – ${p.predAway}</div>
-              <div class="pred-team away">${esc(p.awayTeam)}</div>
+              <div class="pred-team away"><span>${esc(p.awayTeam)}</span>${crestImg(p.awayCrest)}</div>
             </div>
             ${resultHtml}
           </div>`;
@@ -609,6 +624,11 @@
 
     function esc(str) {
       return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function crestImg(url) {
+      if (!url) return '';
+      return `<img class="team-crest" src="${esc(url)}" alt="" onerror="this.remove()">`;
     }
 
     loadMatches();

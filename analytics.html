@@ -218,9 +218,12 @@
       // Sort series by final points desc for the table
       const sorted = [...series].sort((a, b) => (b.points.at(-1) || 0) - (a.points.at(-1) || 0));
 
+      // Charts only show the top 5 to stay readable with many players
+      const top5 = sorted.slice(0, 5);
+
       document.getElementById('mainContent').innerHTML = `
       <div class="card">
-        <div class="section-title">📈 Points progression</div>
+        <div class="section-title">📈 Points progression — Top 5</div>
         <div class="chart-wrap"><canvas id="progressChart"></canvas></div>
       </div>
 
@@ -260,39 +263,45 @@
       </div>
 
       <div class="card">
-        <div class="section-title">📅 Points per game day</div>
+        <div class="section-title">📅 Points per game day — Top 5</div>
         <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
       </div>
     `;
 
-      // Line chart — cumulative progression
+      // Line chart — cumulative progression (top 5 only, colors matched to the table above)
       new Chart(document.getElementById('progressChart'), {
         type: 'line',
         data: {
           labels,
-          datasets: series.map((s, i) => ({
-            label: s.name,
-            data: s.points,
-            borderColor: COLORS[i % COLORS.length],
-            backgroundColor: COLORS[i % COLORS.length] + '22',
-            borderWidth: 2.5,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            tension: 0.3,
-            fill: false,
-          })),
+          datasets: top5.map(s => {
+            const color = COLORS[series.indexOf(s) % COLORS.length];
+            return {
+              label: s.name,
+              data: s.points,
+              borderColor: color,
+              backgroundColor: color + '22',
+              borderWidth: 2.5,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              tension: 0.3,
+              fill: false,
+            };
+          }),
         },
         options: chartOptions('Points'),
       });
 
-      // Bar chart — points per game day per player
-      const dailyPts = series.map((s, i) => ({
-        label: s.name,
-        data: s.points.map((v, j) => j === 0 ? v : v - s.points[j - 1]),
-        backgroundColor: COLORS[i % COLORS.length] + 'bb',
-        borderColor: COLORS[i % COLORS.length],
-        borderWidth: 1,
-      }));
+      // Bar chart — points per game day per player (top 5 only)
+      const dailyPts = top5.map(s => {
+        const color = COLORS[series.indexOf(s) % COLORS.length];
+        return {
+          label: s.name,
+          data: s.points.map((v, j) => j === 0 ? v : v - s.points[j - 1]),
+          backgroundColor: color + 'bb',
+          borderColor: color,
+          borderWidth: 1,
+        };
+      });
 
       new Chart(document.getElementById('dailyChart'), {
         type: 'bar',
